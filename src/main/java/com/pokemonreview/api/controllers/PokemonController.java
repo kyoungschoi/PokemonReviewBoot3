@@ -36,15 +36,15 @@ public class PokemonController {
         return new ResponseEntity<>(pokemonService.createPokemon(pokemonDto), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{pokemonId}")
     public ResponseEntity<PokemonDto> updatePokemon(@RequestBody PokemonDto pokemonDto,
-                                                    @PathVariable("id") int pokemonId) {
+                                                    @PathVariable("pokemonId") int pokemonId) {
         PokemonDto response = pokemonService.updatePokemon(pokemonDto, pokemonId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePokemon(@PathVariable("id") int pokemonId) {
+    @DeleteMapping("/{pokemonId}")
+    public ResponseEntity<String> deletePokemon(@PathVariable("pokemonId") int pokemonId) {
         pokemonService.deletePokemonId(pokemonId);
         return new ResponseEntity<>("Pokemon delete", HttpStatus.OK);
     }

@@ -1,14 +1,19 @@
 package com.pokemonreview.api.controllers;
 
+import com.pokemonreview.api.dto.AuthResponseDto;
+import com.pokemonreview.api.dto.LoginDto;
 import com.pokemonreview.api.dto.UserDto;
 import com.pokemonreview.api.models.Role;
 import com.pokemonreview.api.models.UserEntity;
 import com.pokemonreview.api.repository.RoleRepository;
 import com.pokemonreview.api.repository.UserRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.pokemonreview.api.security.JWTGenerator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,16 +24,23 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-		private UserRepository userRepository;
+
+    private UserRepository userRepository;
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
+    private AuthenticationManager authenticationManager;
+    private JWTGenerator jwtGenerator;
 
-		public AuthController(UserRepository userRepository,
+    public AuthController(UserRepository userRepository,
                           RoleRepository roleRepository,
-                          PasswordEncoder passwordEncoder) {
+                          PasswordEncoder passwordEncoder,
+                          AuthenticationManager authenticationManager,
+                          JWTGenerator jwtGenerator) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jwtGenerator = jwtGenerator;
     }
 
     @GetMapping("/welcome")
@@ -36,7 +48,21 @@ public class AuthController {
         return "Welcome this endpoint is not secure";
     }
 
-		@PostMapping("/register")
+		@PostMapping("/login")
+    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto){
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginDto.getUsername(), 
+                        loginDto.getPassword())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = jwtGenerator.generateToken(authentication);
+        AuthResponseDto authResponseDTO = new AuthResponseDto(token);
+        authResponseDTO.setUsername(loginDto.getUsername());
+        return new ResponseEntity<>(authResponseDTO, HttpStatus.OK);
+    }
+
+    @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody UserDto userDto) {
         if (userRepository.existsByUsername(userDto.getUsername())) {
             return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
@@ -60,5 +86,4 @@ public class AuthController {
 
         return new ResponseEntity<>("User registered success!", HttpStatus.OK);
     }
-
 }
