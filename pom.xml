@@ -76,14 +76,20 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-maven-plugin -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<version>3.0.6</version>
+		</dependency>
 
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>3.0.6</version>
 				<configuration>
 					<excludes>
 						<exclude>
@@ -94,6 +100,6 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>springboot-vuejs-backend</finalName>
 	</build>
-
 </project>
