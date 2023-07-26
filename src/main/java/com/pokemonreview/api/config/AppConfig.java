@@ -17,7 +17,7 @@ public class AppConfig {
     public CommandLineRunner test(PokemonRepository pokemonRepository) {
         return args -> {
             pokemonRepository.deleteAll();
-            List<Pokemon> pokemonList = IntStream.range(0, 10)
+            List<Pokemon> pokemonList = IntStream.range(0, 3)
                     .mapToObj(i -> Pokemon.builder()
                             .name("pikachu" + i)
                             .type(PokemonType.ELECTRIC)
